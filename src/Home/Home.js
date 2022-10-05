@@ -13,7 +13,7 @@ import logo from './home-doot.webp';
 function Home() {
   return (
     <div>
-      <Grid container spacing={2} justifyContent="center" sx={{ pt: 1 }}>
+      <Grid container spacing={2} justifyContent="center">
         <Grid item xs={4}>
           <Card>
             <CardMedia

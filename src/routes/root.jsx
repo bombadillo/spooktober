@@ -24,7 +24,7 @@ export default function Root() {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
+            <AppBar position="fixed">
               <Toolbar>
                 <IconButton
                   size="large"
@@ -60,9 +60,11 @@ export default function Root() {
         </Grid>
       </Grid>
 
-      <Outlet />
+      <Box sx={{ pt: 10 }}>
+        <Outlet />
+      </Box>
 
-     <MyMovies open={movieListOpen} toggleOpen={toggleShowMovieList} />
+      <MyMovies open={movieListOpen} toggleOpen={toggleShowMovieList} />
     </>
   );
 }

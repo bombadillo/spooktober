@@ -32,20 +32,19 @@ function AddMovie() {
   };
 
   const onGenreSelectChanged = (event, changedValue) => {
+    setMovies([])
     setSelectedGenres(changedValue);
   };
 
   const findMovies = async page => {
     page = page ?? currentMoviePage;
-
-    if (keywords) setMovies(await MovieService.getByKeywords(keywords, page));
-    else setMovies(await MovieService.getByGenre(selectedGenres, page));
+    if (keywords) setMovies([...movies, ...await MovieService.getByKeywords(keywords, page)]);
+    else setMovies([...movies, ...await MovieService.getByGenre(selectedGenres, page)]);
   };
 
   const loadMore = async () => {
     setCurrentMoviePage(currentMoviePage + 1);
-    const newMovies = await findMovies(currentMoviePage + 1);
-    setMovies([...movies, ...newMovies]);
+    await findMovies(currentMoviePage + 1);
   };
 
   const handleMovieSelected = movie => {
@@ -57,7 +56,6 @@ function AddMovie() {
     const currentMovieList =
       JSON.parse(localStorage.getItem('movie-list')) ?? [];
 
-    
     currentMovieList.push(selectedMovie);
     localStorage.setItem('movie-list', JSON.stringify(currentMovieList));
 

@@ -9,6 +9,7 @@ import MovieCard from './MovieCard';
 function MyMovies(props) {
   const [movieList, setMovieList] = useState([]);
   const [daysInMonth, setDaysInMonth] = useState([]);
+  const [movieRefreshKey, setMovieRefreshKey] = useState(0);
 
   const style = {
     position: 'absolute',
@@ -31,7 +32,6 @@ function MyMovies(props) {
       days.push(new Date(date));
       date.setDate(date.getDate() + 1);
     }
-    console.log(days)
     return days;
   }
 
@@ -41,20 +41,28 @@ function MyMovies(props) {
     );
   }
 
+  function onMovieDeleted(movie) {
+    const currentMovieList =
+      JSON.parse(localStorage.getItem('movie-list')) ?? [];
+
+    const updatedMovieList = currentMovieList.filter(x => x.id !== movie.id);
+
+    localStorage.setItem('movie-list', JSON.stringify(updatedMovieList));
+
+    setMovieRefreshKey(movieRefreshKey + 1)
+  }
+
   useEffect(() => {
-    console.log(props.open);
     if (props.open) {
       const movieListInStorage = JSON.parse(localStorage.getItem('movie-list'));
       setMovieList(movieListInStorage);
-      console.log(movieListInStorage);
     }
-  }, [props.open]);
+  }, [props.open, movieRefreshKey]);
 
   useEffect(() => {
     setDaysInMonth(getDaysInMonth(9, 2022));
   }, []);
 
-  console.log(daysInMonth);
 
   return (
     <Modal
@@ -82,13 +90,12 @@ function MyMovies(props) {
                 sx={{ pb: 1 }}
                 justifyContent="center"
               >
-                {console.log(day.toISOString())}
                 <Grid item xs={12} lg={8}>
                   <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                     {day.toISOString().split('T')[0]}
                   </Typography>
                   {getMovieByDate(day) ? (
-                    <MovieCard movie={getMovieByDate(day)} />
+                    <MovieCard movie={getMovieByDate(day)} deletMovieTrigger={onMovieDeleted} />
                   ) : (
                     <Card>
                       

@@ -7,11 +7,9 @@ function DisplayMovies(props) {
     useState();
 
   const viewMovieDescription = selectedMovie => {
-    console.log(selectedMovie)
     if (selectedMovie.id === currentMovieToShowDescription?.id)
       selectedMovie = null;
 
-    console.log('setting movie')
     setCurrentMovieToShowDescription(selectedMovie);
   };
 
