@@ -11,12 +11,18 @@ import { Link, Outlet } from 'react-router-dom';
 import { Button } from '@mui/material';
 import { useState } from 'react';
 import MyMovies from '../Movies/MyMovies';
+import MovieBookmarks from '../Movies/MovieBookmarks';
 
 export default function Root() {
   const [movieListOpen, setMovieListOpen] = useState(false);
+  const [bookmarksOpen, setBookmarksOpen] = useState(false);
 
   const toggleShowMovieList = show => {
     setMovieListOpen(show);
+  };
+
+  const toggleShowBookmarks = show => {
+    setBookmarksOpen(show);
   };
 
   return (
@@ -54,6 +60,12 @@ export default function Root() {
                 >
                   My list
                 </Button>
+                <Button
+                  color="secondary"
+                  onClick={() => toggleShowBookmarks(true)}
+                >
+                  Bookmarks
+                </Button>
               </Toolbar>
             </AppBar>
           </Box>
@@ -65,6 +77,7 @@ export default function Root() {
       </Box>
 
       <MyMovies open={movieListOpen} toggleOpen={toggleShowMovieList} />
+      <MovieBookmarks open={bookmarksOpen} toggleOpen={toggleShowBookmarks} />
     </>
   );
 }

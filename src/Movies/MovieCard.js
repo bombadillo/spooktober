@@ -4,10 +4,13 @@ import {
   CardActions,
   CardContent,
   CardMedia,
+  Grid,
+  Link,
   Typography
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
+import OpenIcon from '@mui/icons-material/OpenInNew';
 
 function MovieCard(props) {
   const [showMovieDescription, setShowMovieDescription] = useState();
@@ -22,6 +25,14 @@ function MovieCard(props) {
       position: 'absolute',
       bottom: '0px',
       left: '0px',
+      color: 'white',
+      backgroundColor: 'rgba(0,0,0,0.8)',
+      padding: '20px'
+    },
+    rating: {
+      position: 'absolute',
+      top: '0px',
+      right: '0px',
       color: 'white',
       backgroundColor: 'rgba(0,0,0,0.8)',
       padding: '20px'
@@ -63,11 +74,37 @@ function MovieCard(props) {
             {props.movie.overview}
           </Typography>
         )}
+        {props.movie.vote_average && (
+          <Typography
+            style={styles.rating}
+            variant="body2"
+            color="text.secondary"
+          >
+            {props.movie.vote_average}
+          </Typography>
+        )}
       </Box>
       <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
-          {props.movie.title}
-        </Typography>
+        <Grid container>
+          <Grid item xs={9}>
+            <Typography gutterBottom variant="h5" component="div">
+              {props.movie.title}
+            </Typography>
+          </Grid>
+          <Grid item xs={3}>
+            <Button
+              size="small"
+              component={Link}
+              variant="contained"
+              endIcon={<OpenIcon />}
+              href={`https://www.imdb.com/title/${props.movieDetail?.imdb_id}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              IMDB
+            </Button>
+          </Grid>
+        </Grid>
       </CardContent>
       <CardActions sx={{ pb: 4 }}>
         {props.movieSelected && (
@@ -76,7 +113,17 @@ function MovieCard(props) {
             variant="contained"
             onClick={() => props.movieSelected(props.movie)}
           >
-            Add to list
+            Add
+          </Button>
+        )}
+        {props.movieBookmarked && (
+          <Button
+            size="small"
+            variant="outlined"
+            color="secondary"
+            onClick={() => props.movieBookmarked(props.movie)}
+          >
+            Bookmark
           </Button>
         )}
         <Button
@@ -105,6 +152,17 @@ function MovieCard(props) {
             onClick={() => props.deletMovieTrigger(props.movie)}
           >
             Confirm delete
+          </Button>
+        )}
+
+        {props.removeBookmark && (
+          <Button
+            size="small"
+            variant="outlined"
+            color="error"
+            onClick={() => props.removeBookmark(props.movie)}
+          >
+            Remove bookmark
           </Button>
         )}
       </CardActions>

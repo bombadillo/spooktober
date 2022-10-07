@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Card,
   CardActions,
@@ -6,11 +7,12 @@ import {
   CardMedia,
   Grid,
   Modal,
+  Snackbar,
   TextField,
   Typography
 } from '@mui/material';
 import { Box } from '@mui/system';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Genres from '../Genres/Genres';
 import DisplayMovies from './DisplayMovies';
 import MovieService from './services/movie-service';
@@ -18,10 +20,13 @@ import MovieService from './services/movie-service';
 function AddMovie() {
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [movies, setMovies] = useState([]);
+  const [moviesSupplementaryDetail, setMoviesSupplementaryDetail] = useState();
   const [currentMoviePage, setCurrentMoviePage] = useState(1);
   const [keywords, setKeywords] = useState();
   const [showAddMovieModal, setShowAddMovieModal] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState();
+  const [showSnackbar, setShowSnackbar] = useState();
+  const [updateMovieDetailsKey, setUpdateDetailsMovieKey] = useState(1);
 
   const style = {
     position: 'absolute',
@@ -32,14 +37,30 @@ function AddMovie() {
   };
 
   const onGenreSelectChanged = (event, changedValue) => {
-    setMovies([])
+    setMovies([]);
     setSelectedGenres(changedValue);
   };
 
   const findMovies = async page => {
-    page = page ?? currentMoviePage;
-    if (keywords) setMovies([...movies, ...await MovieService.getByKeywords(keywords, page)]);
-    else setMovies([...movies, ...await MovieService.getByGenre(selectedGenres, page)]);
+    let existingMovies = [...movies];
+
+    if (!page) {
+      existingMovies = [];
+      page = 1;
+    }
+
+    if (keywords)
+      setMovies([
+        ...existingMovies,
+        ...(await MovieService.getByKeywords(keywords, page))
+      ]);
+    else
+      setMovies([
+        ...existingMovies,
+        ...(await MovieService.getByGenre(selectedGenres, page))
+      ]);
+
+    setUpdateDetailsMovieKey(updateMovieDetailsKey + 1);
   };
 
   const loadMore = async () => {
@@ -62,6 +83,19 @@ function AddMovie() {
     toggleShowAddMovieModal(false);
   };
 
+  function onMovieBookmarked(movie) {
+    const currentMovieBookmarks =
+      JSON.parse(localStorage.getItem('movie-bookmarks')) ?? [];
+
+    currentMovieBookmarks.push(movie);
+    localStorage.setItem(
+      'movie-bookmarks',
+      JSON.stringify(currentMovieBookmarks)
+    );
+
+    setShowSnackbar(true);
+  }
+
   const toggleShowAddMovieModal = show => {
     setShowAddMovieModal(show);
   };
@@ -71,9 +105,31 @@ function AddMovie() {
     toggleShowAddMovieModal(false);
   };
 
-  const movieDateSelected = (date) => {
-    setSelectedMovie({...selectedMovie, watchDate: date})
-  }
+  const movieDateSelected = date => {
+    setSelectedMovie({ ...selectedMovie, watchDate: date });
+  };
+
+  const getMovieDetails = useCallback(async moviesToUpdate => {
+    console.log('updating movie details');
+
+    const moviesDetail = {};
+
+    for (var movie of moviesToUpdate) {
+      const movieDetails = await MovieService.getMovieDetails(movie);
+      moviesDetail[movie.id] = movieDetails;
+
+      console.log('updated details');
+    }
+    
+    setMoviesSupplementaryDetail(moviesDetail);
+  }, []);
+
+  useEffect(() => {    
+    const moviesToUpdate = [...movies];
+
+    getMovieDetails(moviesToUpdate);
+
+  }, [updateMovieDetailsKey, getMovieDetails, movies]);
 
   return (
     <>
@@ -89,7 +145,7 @@ function AddMovie() {
                 onChange={e => setKeywords(e.target.value)}
               />
               <CardActions sx={{ pt: 4 }}>
-                <Button variant="contained" onClick={findMovies}>
+                <Button variant="contained" onClick={() => findMovies()}>
                   Find movies 🍿
                 </Button>
               </CardActions>
@@ -99,7 +155,12 @@ function AddMovie() {
       </Grid>
 
       <Grid container spacing={2} sx={{ pt: 4 }}>
-        <DisplayMovies movies={movies} movieSelected={handleMovieSelected} />
+        <DisplayMovies
+          movies={movies}
+          moviesSupplementaryDetail={moviesSupplementaryDetail}
+          movieSelected={handleMovieSelected}
+          movieBookmarked={onMovieBookmarked}
+        />
       </Grid>
 
       {movies.length > 0 && (
@@ -137,11 +198,16 @@ function AddMovie() {
                 InputLabelProps={{
                   shrink: true
                 }}
-                onChange={ e => movieDateSelected(e.target.value)}
+                onChange={e => movieDateSelected(e.target.value)}
               />
             </CardContent>
             <CardActions sx={{ pb: 4 }}>
-              <Button size="small" variant="contained" onClick={addMovieToList} disabled={!selectedMovie?.watchDate}>
+              <Button
+                size="small"
+                variant="contained"
+                onClick={addMovieToList}
+                disabled={!selectedMovie?.watchDate}
+              >
                 Confirm
               </Button>
               <Button
@@ -155,6 +221,17 @@ function AddMovie() {
           </Card>
         </Box>
       </Modal>
+
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={6000}
+        severity="success"
+        onClose={() => setShowSnackbar(false)}
+      >
+        <Alert severity="success" sx={{ width: '100%' }}>
+          Movie bookmarked 🎫
+        </Alert>
+      </Snackbar>
     </>
   );
 }

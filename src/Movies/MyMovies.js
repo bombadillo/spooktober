@@ -28,7 +28,7 @@ function MyMovies(props) {
     border: '2px solid #000',
     boxShadow: 24,
     p: 4,
-    overflow: 'scroll'
+    overflowY: 'scroll'
   };
 
   function getDaysInMonth(month, year) {
@@ -92,7 +92,7 @@ function MyMovies(props) {
           component="h2"
           textAlign="center"
         >
-          My movies
+          🎃 My movies
         </Typography>
 
         {daysInMonth && (
@@ -139,6 +139,7 @@ function MyMovies(props) {
                   {getMovieByDate(day) ? (
                     <MovieCard
                       movie={getMovieByDate(day)}
+                      moviesSupplementaryDetail={props.moviesSupplementaryDetail}
                       deletMovieTrigger={
                         isPastWatchDate(getMovieByDate(day))
                           ? null

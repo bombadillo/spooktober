@@ -10,7 +10,7 @@ async function getByGenre(genres, page) {
   genreIds = genreIds.slice(0, -1)
   
   const url =
-    `https://api.themoviedb.org/3/discover/movie?api_key=d8139585473f518d109a6ab8208f741d&language=en-US&sort_by=popularity.desc&include_adult=true&include_video=false&page=${page}&with_watch_monetization_types=flatrate&with_genres=${genreIds}`;
+    `https://api.themoviedb.org/3/discover/movie?api_key=d8139585473f518d109a6ab8208f741d&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=${page}&with_watch_monetization_types=flatrate&with_genres=${genreIds}`;
   const httpResponse = await fetch(url);
 
   const httpResponsePayload = await httpResponse.json();
@@ -30,9 +30,22 @@ async function getByKeywords(keywords, page) {
   return httpResponsePayload.results;
 }
 
+async function getMovieDetails(movie) {
+  console.log('retrieving movie details for movie', movie);
+
+  const url = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=d8139585473f518d109a6ab8208f741d`;
+
+  const httpResponse = await fetch(url);
+
+  const httpResponsePayload = await httpResponse.json();
+
+  return httpResponsePayload;
+}
+
 const MovieService = {
   getByGenre,
-  getByKeywords
+  getByKeywords,
+  getMovieDetails
 };
 
 export default MovieService;
