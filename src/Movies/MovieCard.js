@@ -70,13 +70,15 @@ function MovieCard(props) {
         </Typography>
       </CardContent>
       <CardActions sx={{ pb: 4 }}>
-        <Button
-          size="small"
-          variant="contained"
-          onClick={() => props.movieSelected(props.movie)}
-        >
-          Add to list
-        </Button>
+        {props.movieSelected && (
+          <Button
+            size="small"
+            variant="contained"
+            onClick={() => props.movieSelected(props.movie)}
+          >
+            Add to list
+          </Button>
+        )}
         <Button
           size="small"
           variant="outlined"

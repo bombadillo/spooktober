@@ -24,7 +24,7 @@ function Home() {
             />
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
-                Begin your spooktacular journey
+                Begin your spooktacular movie list 🎬🎃
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 With thousands of movies to choose from, you're bound to be in
@@ -38,17 +38,7 @@ function Home() {
               <Button size="small">Learn More</Button>
             </CardActions>
           </Card>
-        </Grid>
-        {/* <Grid item xs={4}>
-    <Box
-      sx={{
-        backgroundColor: 'primary.dark'}}>xs=4</Box>
-  </Grid>
-  <Grid item xs={8}>
-    <Box
-      sx={{
-        backgroundColor: 'primary.dark'}}>xs=8</Box>
-  </Grid> */}
+        </Grid>        
       </Grid>
     </div>
   );

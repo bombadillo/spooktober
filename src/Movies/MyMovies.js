@@ -1,8 +1,14 @@
-import { Button, Card, CardActions, CardContent, Grid, Link, Modal, Typography } from '@mui/material';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Grid,
+  Modal,
+  Typography
+} from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
-
-import {Link as RouterLink} from 'react-router-dom';
 
 import MovieCard from './MovieCard';
 
@@ -49,8 +55,17 @@ function MyMovies(props) {
 
     localStorage.setItem('movie-list', JSON.stringify(updatedMovieList));
 
-    setMovieRefreshKey(movieRefreshKey + 1)
+    setMovieRefreshKey(movieRefreshKey + 1);
   }
+
+  const isPastWatchDate = movie => {
+    if (!movie) return;
+
+    const watchDate = new Date(movie.watchDate);
+    let currentDate = new Date(new Date().toISOString().split('T')[0]);
+
+    return watchDate.getTime() < currentDate.getTime();
+  };
 
   useEffect(() => {
     if (props.open) {
@@ -62,7 +77,6 @@ function MyMovies(props) {
   useEffect(() => {
     setDaysInMonth(getDaysInMonth(9, 2022));
   }, []);
-
 
   return (
     <Modal
@@ -87,25 +101,64 @@ function MyMovies(props) {
               <Grid
                 container
                 key={index}
-                sx={{ pb: 1 }}
+                sx={{ position: 'relative', mb: 4 }}
                 justifyContent="center"
               >
-                <Grid item xs={12} lg={8}>
-                  <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    {day.toISOString().split('T')[0]}
+                <Grid item xs={12} lg={8} textAlign="center" position="relative">
+                  {isPastWatchDate(getMovieByDate(day)) && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        height: '100%',
+                        width: '100%',
+                        background: 'rgba(51, 54, 92,0.4)',
+                        zIndex: 1,
+                        display: 'flex',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <Typography
+                        variant="h3"
+                        sx={{ textShadow: '1px 2px 12px black' }}
+                      >
+                        Watched 🍿
+                      </Typography>
+                    </Box>
+                  )}
+
+                  <Typography
+                    variant="h4"
+                    id="modal-modal-description"
+                    sx={{ mt: 2 }}
+                    fontWeight="fontWeightBold"
+                  >
+                    {day.toISOString().split('T')[0]}{' '}
                   </Typography>
                   {getMovieByDate(day) ? (
-                    <MovieCard movie={getMovieByDate(day)} deletMovieTrigger={onMovieDeleted} />
+                    <MovieCard
+                      movie={getMovieByDate(day)}
+                      deletMovieTrigger={
+                        isPastWatchDate(getMovieByDate(day))
+                          ? null
+                          : onMovieDeleted
+                      }
+                    />
                   ) : (
                     <Card>
-                      
                       <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
                           No movie selected for this date
                         </Typography>
                       </CardContent>
                       <CardActions sx={{ pb: 4 }}>
-                        <Button variant="contained" onClick={() => props.toggleOpen(false)}>Find a movie</Button>                 
+                        <Button
+                          variant="contained"
+                          onClick={() => props.toggleOpen(false)}
+                        >
+                          Find a movie
+                        </Button>
                       </CardActions>
                     </Card>
                   )}

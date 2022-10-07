@@ -4,7 +4,7 @@ import './index.css';
 import Home from './Home/Home';
 import AddMovies from './Movies/AddMovie';
 import reportWebVitals from './reportWebVitals';
-import { createBrowserRouter, RouterProvider, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Root from "./routes/root";
@@ -15,6 +15,16 @@ const darkTheme = createTheme({
   }
 });
 
+function getStartingElement() {
+  const currentMovieList =
+      JSON.parse(localStorage.getItem('movie-list')) ?? [];
+
+  if (currentMovieList.length)
+    return <Navigate to="movies/add" />
+  else
+    return <Home />
+}
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -22,7 +32,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home />,
+        element: getStartingElement(),
       },
       {
         path: "movies/add",
