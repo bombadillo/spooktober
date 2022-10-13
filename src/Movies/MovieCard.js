@@ -12,6 +12,8 @@ import { Box } from '@mui/system';
 import { useEffect, useState } from 'react';
 import OpenIcon from '@mui/icons-material/OpenInNew';
 
+import notFound from './not-found.png'
+
 function MovieCard(props) {
   const [showMovieDescription, setShowMovieDescription] = useState();
   const [promptConfirmDelete, setPromptConfirmDelete] = useState();
@@ -61,7 +63,7 @@ function MovieCard(props) {
         <CardMedia
           component="img"
           sx={{ objectFit: 'contain' }}
-          image={`https://image.tmdb.org/t/p/original${props.movie.backdrop_path}`}
+          image={props.movie.backdrop_path ? `https://image.tmdb.org/t/p/original${props.movie.backdrop_path}` : notFound}
           alt="doot"
           style={styles.media}
         />
@@ -74,7 +76,7 @@ function MovieCard(props) {
             {props.movie.overview}
           </Typography>
         )}
-        {props.movie.vote_average && (
+        {props.movie.vote_average > 0 && (
           <Typography
             style={styles.rating}
             variant="body2"
