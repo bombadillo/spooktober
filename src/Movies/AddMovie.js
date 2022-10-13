@@ -6,7 +6,10 @@ import {
   CardContent,
   CardMedia,
   Grid,
+  InputLabel,
+  MenuItem,
   Modal,
+  Select,
   Snackbar,
   TextField,
   Typography
@@ -27,6 +30,7 @@ function AddMovie() {
   const [selectedMovie, setSelectedMovie] = useState();
   const [showSnackbar, setShowSnackbar] = useState();
   const [updateMovieDetailsKey, setUpdateDetailsMovieKey] = useState(1);
+  const [sortBy, setSortBy] = useState('popularity.desc');
 
   const style = {
     position: 'absolute',
@@ -52,12 +56,12 @@ function AddMovie() {
     if (keywords)
       setMovies([
         ...existingMovies,
-        ...(await MovieService.getByKeywords(keywords, page))
+        ...(await MovieService.getByKeywords(keywords, page, sortBy))
       ]);
     else
       setMovies([
         ...existingMovies,
-        ...(await MovieService.getByGenre(selectedGenres, page))
+        ...(await MovieService.getByGenre(selectedGenres, page, sortBy))
       ]);
 
     setUpdateDetailsMovieKey(updateMovieDetailsKey + 1);
@@ -120,15 +124,14 @@ function AddMovie() {
 
       console.log('updated details');
     }
-    
+
     setMoviesSupplementaryDetail(moviesDetail);
   }, []);
 
-  useEffect(() => {    
+  useEffect(() => {
     const moviesToUpdate = [...movies];
 
     getMovieDetails(moviesToUpdate);
-
   }, [updateMovieDetailsKey, getMovieDetails, movies]);
 
   return (
@@ -144,6 +147,19 @@ function AddMovie() {
                 variant="outlined"
                 onChange={e => setKeywords(e.target.value)}
               />
+
+              <InputLabel id="demo-simple-select-label">Sort by</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={sortBy}
+                label="Sort by"
+                onChange={e => setSortBy(e.target.value)}
+              >
+                <MenuItem value="popularity.desc">Popularity</MenuItem>
+                <MenuItem value="vote_average.desc">Rating</MenuItem>
+                <MenuItem value="release_date.desc">Release</MenuItem>
+              </Select>
               <CardActions sx={{ pt: 4 }}>
                 <Button variant="contained" onClick={() => findMovies()}>
                   Find movies 🍿
